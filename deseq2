@@ -1,0 +1,38 @@
+directory <- "/home/mayte/Escritorio/xxx"
+ sampleFiles <- grep("*.txt", list.files(directory), value=TRUE)
+ sampleFiles
+ [1] "01hdr1.txt" "01hdr2.txt" "01hdr3.txt" "01ldr1.txt" "01ldr2.txt"
+ [6] "01ldr3.txt" "02hdr1.txt" "02hdr2.txt" "02ldr1.txt" "02ldr2.txt"
+
+ condition <- c('WT','WT','WT','mutbcat','mutbcat')
+sampleTable <- data.frame(sampleName=sampleFiles, fileName=sampleFiles, condition=condition)
+ ddsHTseq <- DESeqDataSetFromHTSeqCount(sampleTable=sampleTable, directory=directory, design= ~condition)
+ 
+ dds <- DESeq(ddsHTseq)
+ contrast <- c("condition", "mutbcat", "WT")
+ 
+vsd <- vst(dds, blind=FALSE)
+ rld <- rlog(dds, blind=FALSE)
+ sampleDists <- dist(t(assay(vsd)))
+ library("pheatmap")
+ pdf("samplesDistances.pdf")
+ sampleDistMatrix <- as.matrix(sampleDists)
+rownames(sampleDistMatrix) <- paste(vsd$condition, vsd$type, sep="-")
+colnames(sampleDistMatrix) <- NULL
+
+ library(RColorBrewer)
+ colors <- colorRampPalette(rev(brewer.pal(9, "Blues")))(255)
+ pheatmap(sampleDistMatrix, clustering_distance_rows=sampleDists, clustering_distance_cols=sampleDists, col=colors)
+ dev.off()
+
+
+ pdf("pca.pdf")
+ plotPCA(vsd, intgroup=c("condition"))
+ dev.off()
+
+dds <- dds[ rowSums(counts(dds)) > 1, ]
+ res <- results(dds, contrast=contrast)
+ head(res)
+
+
+write.csv(res,"listaDEG_mutbcatvsWT_LD.csv")
