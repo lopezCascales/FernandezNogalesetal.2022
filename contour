@@ -1,0 +1,128 @@
+ta <- read.csv("contourplottable2.csv")
+ head(ta)
+library(ggplot2)
+ta <- read.csv("contourplottable3.csv")
+ head(ta)
+library(ggplot2)
+
+sp1 <- ggplot(ta, aes(x = foldchangeATAC, y = log2FoldChange)) +
+       geom_point(shape = 16, size = 1) +
+       labs(x = "foldchangeATAC",  y = "Expression(L2FC)")
+  sp1 + geom_point() + geom_smooth(method=lm, se=FALSE, fullrange=TRUE)
+	sp1 + geom_density_2d()
+
+
+sp2 <- ggplot(ta, aes(x = foldchangeATAC, y = log2FoldChange, color=(DEGs))) +
+       geom_point(shape = 16, size = 1) +
+       labs(x = "foldchangeATAC",  y = "Expression(L2FC)")
+
+ sp2 + geom_point() + 
+  geom_smooth(method=lm, se=FALSE, fullrange=TRUE)
+
+mid=0.1
+sp2+scale_color_gradient2(midpoint=mid, low="orange", mid="white",
+                     high="green", space ="Lab" )
+
+
+commonTheme = list(labs(color="Density",fill="Density",
+                        x="ATACseq signal LogFC",
+                        y="RNAseq Expression"))
+
+ggplot(ta,aes(x=foldchangeATAC,y=log2FoldChange)) + 
+  stat_density2d(aes(fill=..level..,alpha=..level..),geom='polygon',colour='black') + 
+  scale_fill_continuous(low="green",high="red") +
+  geom_smooth(method=lm,linetype=2,colour="red",se=F) + 
+  guides(alpha="none") + geom_density_2d()
+  geom_point() + commonTheme
+
+rna <- read.csv("xxtt.csv")
+
+sp2 <- ggplot(rna, aes(x = foldchangeATAC, y = log2FoldChange.x, color=(DEGs.x))) +
+       geom_point(shape = 16, size = 1) +
+       labs(x = "foldchangeATAC",  y = "Expression(L2FC)")
+
+
+commonTheme = list(labs(color="DEGs.x",fill="padj",
+                        x="ATACseq signal LogFC",
+                        y="RNAseq Expression")
+
+ggplot(rna,aes(x = foldchangeATAC, y = log2FoldChange.x)) + 
+   
+  scale_fill_continuous(low="blue",high="red") +
+  geom_smooth(method=lm,linetype=2,colour="black",se=F) + 
+  guides(alpha="none") +
+  geom_point() +
+stat_density2d(aes(fill=..level..,alpha=..level..),geom='polygon',colour='black') + commonTheme
+
+
+pdf("density2.pdf")
+sp3 <- ggplot(rna,aes(foldchangeATAC, log2FoldChange.x)) + 
+    geom_density2d() +
+    theme(axis.title.y = element_text(angle = 0, vjust = 0.5))
+ sp3+scale_color_gradientn(colours = rainbow(5))
+sp3 + stat_poly_eq(formula = my.formula, 
+                aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), 
+                parse = TRUE) +         
+   geom_point()
+
+
+dev.off()
+pdf("density2.pdf")
+sp3 + geom_smooth(method=lm, se=FALSE)
+dev.off()
+
+sp4 <- ggplot(rna, aes(x=foldchangeATAC, y=log2FoldChange.x, color=padj.x))
+ sp4 + geom_point() + 
+  geom_smooth(method=lm, se=FALSE, fullrange=TRUE)
+sp4+scale_color_gradientn(colours = rainbow(5))
+
+
+ggplot(rna, aes(x=foldchangeATAC, y=log2FoldChange.x)) +
+    geom_point() + 
+  geom_density_2d_filled() 
+
+pdf("contourplot.pdf")
+sss <- ggplot(rna,aes(x = foldchangeATAC, y = log2FoldChange.x)) 
+
+pdf("contourplot.pdf")
+  sss + scale_fill_continuous() +
+  geom_smooth(method=lm,linetype=2,colour="black",se=F) + 
+  guides(alpha="none") +
+  geom_point(aes(colour = factor(DEGs.x))) +
+  scale_color_manual(values=c("gray80","#FFA07A", "gray80", "#98ddde")) +
+stat_density2d(aes(fill=..level..,alpha=..level..),geom='polygon',colour='black') + commonTheme 
+dev.off()
+
++ stat_smooth(method = "loess")
+# Get the values
++ smooth_vals = predict(loess(foldchangeATAC~log2FoldChange.x,rna))
+
+
+ggplot(ta,aes(x = foldchangeATAC, y = log2FoldChange)) + 
+   
+  scale_fill_continuous() +
+  geom_smooth(method=lm,linetype=2,colour="black",se=F) + 
+  guides(alpha="none") +
+  geom_point() +
+stat_density2d(aes(fill=..level..,alpha=..level..),geom='polygon',colour='black') + commonTheme
+
+> phyper(762,5620,18178,1868,lower.tail=FALSE) # contras
+[1] 7.584169e-67
+> phyper(1221,8635,14863,2100,lower.tail=FALSE) # ipsis
+[1] 3.031583e-97
+
+
+pdf("contourplot3.pdf")
+sss <- ggplot(ta,aes(x = foldchangeATAC, y = log2FoldChange)) 
+
+  sss + scale_fill_continuous(low="white", high="grey20", guide="colorbar") +
+  geom_smooth(method=lm,linetype=2,colour="black",se=F) + 
+  guides(alpha="none") +
+  geom_point(aes(colour = factor(DEGs)),size=0.8) +
+  scale_color_manual(values=c("#FFA07A", "#98d7de")) +
+ theme_bw() +
+stat_density2d(aes(fill=..level..,alpha=..level..),geom='polygon',colour='black',  bins = 6) + commonTheme 
+
+dev.off()
+
+
